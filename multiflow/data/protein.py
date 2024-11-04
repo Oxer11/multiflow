@@ -62,6 +62,9 @@ class Protein:
           f'Cannot build an instance with more than {PDB_MAX_CHAINS} chains '
           'because these cannot be written to PDB format.')
 
+  def to_dict(self):
+    return dataclasses.asdict(self)
+
 
 def from_pdb_string(pdb_str: str, chain_id: Optional[str] = None) -> Protein:
   """Takes a PDB string and constructs a Protein object.
@@ -97,10 +100,10 @@ def from_pdb_string(pdb_str: str, chain_id: Optional[str] = None) -> Protein:
     if chain_id is not None and chain.id != chain_id:
       continue
     for res in chain:
-      if res.id[2] != ' ':
-        raise ValueError(
-            f'PDB contains an insertion code at chain {chain.id} and residue '
-            f'index {res.id[1]}. These are not supported.')
+      # if res.id[2] != ' ':
+      #   raise ValueError(
+      #       f'PDB contains an insertion code at chain {chain.id} and residue '
+      #       f'index {res.id[1]}. These are not supported.')
       res_shortname = residue_constants.restype_3to1.get(res.resname, 'X')
       restype_idx = residue_constants.restype_order.get(
           res_shortname, residue_constants.restype_num)

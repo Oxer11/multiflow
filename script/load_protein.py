@@ -35,12 +35,12 @@ if __name__ == "__main__":
             pdb_string = f.read()
         try:
             data_object = protein.from_pdb_string(pdb_string).to_dict()
-            data_object["modeled_idx"] = np.array([i for i in len(data_object["aatype"])])
+            data_object["modeled_idx"] = np.array([i for i in range(len(data_object["aatype"]))])
         except:
             print(fname, "is not dumped")
             continue
         row = [
-            os.path.basename(fname).split(".")[:-1],
+            os.path.basename(fname).split(".")[0],
             output_fname,
             1,
             len(data_object["aatype"]),
