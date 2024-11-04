@@ -3,7 +3,7 @@ import torch
 import time
 import os
 import random
-import wandb
+# import wandb
 import numpy as np
 import pandas as pd
 import logging
@@ -544,7 +544,7 @@ class FlowModule(LightningModule):
                     aa_trajs[i, -1, j] = 0
         clean_aa_trajs = du.to_numpy(torch.stack(clean_aa_traj, dim=0).transpose(0, 1).long())
         assert clean_aa_trajs.shape == (num_batch, clean_traj_length, sample_length)
-
+        '''
         for i, sample_id in zip(range(num_batch), sample_ids):
             sample_dir = sample_dirs[i]
             top_sample_df = self.compute_sample_metrics(
@@ -565,7 +565,7 @@ class FlowModule(LightningModule):
             )
             top_sample_csv_path = os.path.join(sample_dir, 'top_sample.csv')
             top_sample_df.to_csv(top_sample_csv_path)
-
+        '''
 
     def run_pmpnn(
             self,

@@ -246,11 +246,11 @@ def run(cfg: DictConfig) -> None:
         else:
             raise ValueError(f'Unknown task {cfg.inference.task}')
 
-    if dist.is_initialized():
-        if dist.get_rank() == 0:
-            compute_metrics()
-    else:
-        compute_metrics()
+    # if dist.is_initialized():
+    #     if dist.get_rank() == 0:
+    #         compute_metrics()
+    # else:
+    #     compute_metrics()
 
     elapsed_time = time.time() - start_time
     log.info(f'Finished in {elapsed_time:.2f}s')
