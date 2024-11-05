@@ -7,6 +7,37 @@ shared:
   max_eval_length: 256
 
 
+ec_dataset:
+  seed: ${shared.seed}
+  csv_path: ./metadata/ec_metadata.csv
+  cluster_path: null
+  test_set_pdb_ids_path: null
+  max_cache_size: ${shared.max_cache_size}
+  cache_num_res: 0
+  inpainting_percent: 1.0
+
+  add_plddt_mask: False
+  max_eval_length: null
+  redesigned_csv_path: null
+  use_redesigned: False
+
+  synthetic_csv_path: null
+  synthetic_cluster_path: null
+  use_synthetic: False
+
+  # Eval parameters
+  samples_per_eval_length: null
+  num_eval_lengths: null
+
+  # Filtering
+  filter:
+    max_num_res: null
+    min_num_res: null
+    max_coil_percent: null
+    rog_quantile: null
+    oligomeric: null
+    num_chains: null
+
 
 pdb_dataset:
   seed: ${shared.seed}

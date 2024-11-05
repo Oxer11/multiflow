@@ -2,6 +2,7 @@ from typing import Any
 import torch
 import time
 import os
+import copy
 import random
 # import wandb
 import numpy as np
@@ -456,8 +457,42 @@ class FlowModule(LightningModule):
             params=self.model.parameters(),
             **self._exp_cfg.optimizer
         )
-
+    
     def predict_step(self, batch, batch_idx):
+        noisy_batch = copy.deepcopy(batch)
+        device = f'cuda:{torch.cuda.current_device()}'
+
+        # [B, N, 3]
+        trans_1 = batch['trans_1']  # Angstrom
+
+        # [B, N, 3, 3]
+        rotmats_1 = batch['rotmats_1']
+
+        # [B, N]
+        aatypes_1 = batch['aatypes_1']
+
+        # [B, N]
+        diffuse_mask = batch['diffuse_mask']
+        num_batch, num_res = diffuse_mask.shape
+        
+        t = torch.ones((num_batch, num_res), dtype=torch.float, device=device)
+        noisy_batch['so3_t'] = t
+        noisy_batch['r3_t'] = t
+        noisy_batch['cat_t'] = t
+        noisy_batch["trans_t"] = batch['trans_1']
+        noisy_batch["rotmats_t"] = batch['rotmats_1']
+        noisy_batch["aatypes_t"] = batch['aatypes_1']
+
+        noisy_batch['trans_sc'] = torch.zeros_like(trans_1)
+        noisy_batch['aatypes_sc'] = torch.zeros_like(
+            aatypes_1)[..., None].repeat(1, 1, 21)
+        res_mask = torch.ones(num_batch, num_res, device=self._device)
+        breakpoint()
+        
+        model_pred, reprs = self.model(noisy_batch, return_repr=True)
+        return reprs
+
+    def sample_step(self, batch, batch_idx):
         del batch_idx # Unused
         device = f'cuda:{torch.cuda.current_device()}'
         interpolant = Interpolant(self._infer_cfg.interpolant) 

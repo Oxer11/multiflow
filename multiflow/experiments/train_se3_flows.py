@@ -7,7 +7,7 @@ from pytorch_lightning.loggers.wandb import WandbLogger
 from pytorch_lightning.trainer import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.utilities import rank_zero_only
-from multiflow.data.datasets import PdbDataset
+from multiflow.data.datasets import PdbDataset, BaseDataset
 from multiflow.data.protein_dataloader import ProteinData
 from multiflow.models.flow_module import FlowModule
 from multiflow.experiments import utils as eu

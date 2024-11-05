@@ -61,7 +61,7 @@ class FlowModel(nn.Module):
                     edge_embed_out=self._model_conf.edge_embed_size,
                 )
 
-    def forward(self, input_feats):
+    def forward(self, input_feats, return_repr=False):
         node_mask = input_feats['res_mask']
         edge_mask = node_mask[:, None] * node_mask[:, :, None]
         diffuse_mask = input_feats['diffuse_mask']
@@ -107,6 +107,8 @@ class FlowModel(nn.Module):
         init_node_embed = init_node_embed * node_mask[..., None]
         node_embed = init_node_embed * node_mask[..., None]
         edge_embed = init_edge_embed * edge_mask[..., None]
+        feats = {}
+        feats[0] = node_embed.detach().cpu()
         for b in range(self._ipa_conf.num_blocks):
             ipa_embed = self.trunk[f'ipa_{b}'](
                 node_embed,
@@ -128,6 +130,7 @@ class FlowModel(nn.Module):
                 edge_embed = self.trunk[f'edge_transition_{b}'](
                     node_embed, edge_embed)
                 edge_embed *= edge_mask[..., None]
+            feats[b+1] = node_embed.detach().cpu()
 
         curr_rigids = self.rigids_nm_to_ang(curr_rigids)
         pred_trans = curr_rigids.get_trans()
@@ -146,9 +149,17 @@ class FlowModel(nn.Module):
             pred_logits = nn.functional.one_hot(
                 pred_aatypes, num_classes=self._model_conf.aatype_pred_num_tokens
             ).float()
-        return {
-            'pred_trans': pred_trans,
-            'pred_rotmats': pred_rotmats,
-            'pred_logits': pred_logits,
-            'pred_aatypes': pred_aatypes,
-        }
+        if return_repr:
+            return {
+                'pred_trans': pred_trans,
+                'pred_rotmats': pred_rotmats,
+                'pred_logits': pred_logits,
+                'pred_aatypes': pred_aatypes,
+            }, feats
+        else:
+            return {
+                'pred_trans': pred_trans,
+                'pred_rotmats': pred_rotmats,
+                'pred_logits': pred_logits,
+                'pred_aatypes': pred_aatypes,
+            }
