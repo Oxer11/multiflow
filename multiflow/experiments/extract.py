@@ -104,10 +104,10 @@ class EvalRunner:
         cfg = OmegaConf.merge(cfg, ckpt_cfg)
         cfg.experiment.checkpointer.dirpath = './'
         self._cfg = cfg
-        self._data_cfg = cfg.data
+        self._data_cfg = self._original_cfg.data
         self._exp_cfg = cfg.experiment
         self._infer_cfg = cfg.inference
-        self._samples_cfg = self._infer_cfg.samples
+        self._task = self._data_cfg.task
         self._rng = np.random.default_rng(self._infer_cfg.seed)
 
         # Read checkpoint and initialize module.
@@ -120,7 +120,6 @@ class EvalRunner:
         log.info(pl.utilities.model_summary.ModelSummary(self._flow_module))
         self._flow_module.eval()
         self._flow_module._infer_cfg = self._infer_cfg
-        self._flow_module._samples_cfg = self._samples_cfg
 
     @property
     def inference_dir(self):
@@ -142,13 +141,13 @@ class EvalRunner:
             train_dataset=self._train_dataset,
             valid_dataset=self._valid_dataset
         )
-
+        dataloader = self._datamodule.train_dataloader(rank=1, num_replicas=1)
         trainer = Trainer(
             accelerator="gpu",
             strategy="ddp",
             devices=devices,
         )
-        trainer.predict(self._flow_module, datamodule=self._datamodule)
+        trainer.predict(self._flow_module, dataloaders=dataloader)
 
 
 

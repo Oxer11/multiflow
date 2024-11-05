@@ -487,9 +487,9 @@ class FlowModule(LightningModule):
         noisy_batch['aatypes_sc'] = torch.zeros_like(
             aatypes_1)[..., None].repeat(1, 1, 21)
         res_mask = torch.ones(num_batch, num_res, device=self._device)
-        breakpoint()
         
         model_pred, reprs = self.model(noisy_batch, return_repr=True)
+        breakpoint()
         return reprs
 
     def sample_step(self, batch, batch_idx):

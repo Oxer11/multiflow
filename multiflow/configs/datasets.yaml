@@ -27,7 +27,7 @@ ec_dataset:
 
   # Eval parameters
   samples_per_eval_length: null
-  num_eval_lengths: null
+  num_eval_lengths: 3000 # null
 
   # Filtering
   filter:

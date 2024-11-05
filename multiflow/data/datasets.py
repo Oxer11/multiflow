@@ -179,7 +179,7 @@ class BaseDataset(Dataset):
 
     @abc.abstractmethod
     def _filter_metadata(self, raw_csv: pd.DataFrame) -> pd.DataFrame:
-        pass
+        return raw_csv
 
     def _create_split(self, data_csv):
         # Training or validation specific logic.
