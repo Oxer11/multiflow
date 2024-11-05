@@ -24,3 +24,4 @@ inference:
   num_gpus: 1
 
   unconditional_ckpt_path: ./weights/last.ckpt
+  output_dir: ./extract_output/ec

@@ -490,6 +490,11 @@ class FlowModule(LightningModule):
         
         model_pred, reprs = self.model(noisy_batch, return_repr=True)
         breakpoint()
+        for i, pdb in enumerate(batch["pdb_name"]):
+            output = {'label': pdb}
+            output['mean_representations'] = reprs[i]
+            torch.save(output, os.path.join(self._infer_cfg.output_dir, pdb+".pt"))
+        reprs[0] = ...
         return reprs
 
     def sample_step(self, batch, batch_idx):
