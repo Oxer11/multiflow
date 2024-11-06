@@ -6,7 +6,7 @@ defaults:
 data:
   task: hallucination
 
-  dataset: ec
+  dataset: go
 
   sampler:
     # Setting for 40GB GPUs
@@ -24,4 +24,4 @@ inference:
   num_gpus: 1
 
   unconditional_ckpt_path: ./weights/last.ckpt
-  output_dir: ./extract_output/ec
+  output_dir: ./extract_output/go

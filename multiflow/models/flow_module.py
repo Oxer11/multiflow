@@ -487,14 +487,14 @@ class FlowModule(LightningModule):
         noisy_batch['aatypes_sc'] = torch.zeros_like(
             aatypes_1)[..., None].repeat(1, 1, 21)
         res_mask = torch.ones(num_batch, num_res, device=self._device)
-        
+      
         model_pred, reprs = self.model(noisy_batch, return_repr=True)
-        breakpoint()
         for i, pdb in enumerate(batch["pdb_name"]):
             output = {'label': pdb}
-            output['mean_representations'] = reprs[i]
+            output['mean_representations'] = {
+                k: reprs[k][i] for k, v in reprs.items()
+            }
             torch.save(output, os.path.join(self._infer_cfg.output_dir, pdb+".pt"))
-        reprs[0] = ...
         return reprs
 
     def sample_step(self, batch, batch_idx):

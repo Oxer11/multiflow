@@ -77,6 +77,7 @@ from multiflow.models.flow_module import FlowModule
 from multiflow.data.datasets import BaseDataset
 from multiflow.data.protein_dataloader import ProteinData
 import torch.distributed as dist
+from torch.utils.data import DataLoader
 
 
 torch.set_float32_matmul_precision('high')
@@ -134,6 +135,14 @@ class EvalRunner:
             self._train_dataset, self._valid_dataset = eu.dataset_creation(
                 BaseDataset, self._cfg.ec_dataset, self._task)
             self._dataset_cfg = self._cfg.ec_dataset
+        elif self._data_cfg.dataset == 'go':
+            self._train_dataset, self._valid_dataset = eu.dataset_creation(
+                BaseDataset, self._cfg.go_dataset, self._task)
+            self._dataset_cfg = self._cfg.go_dataset
+        elif self._data_cfg.dataset == 'fold':
+            self._train_dataset, self._valid_dataset = eu.dataset_creation(
+                BaseDataset, self._cfg.fold_dataset, self._task)
+            self._dataset_cfg = self._cfg.fold_dataset
 
         self._datamodule = ProteinData(
             data_cfg=self._data_cfg,
@@ -141,7 +150,7 @@ class EvalRunner:
             train_dataset=self._train_dataset,
             valid_dataset=self._valid_dataset
         )
-        dataloader = self._datamodule.train_dataloader(rank=1, num_replicas=1)
+        dataloader = DataLoader(self._train_dataset, batch_size=1, num_workers=32)
         trainer = Trainer(
             accelerator="gpu",
             strategy="ddp",

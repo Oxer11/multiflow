@@ -105,13 +105,13 @@ def _process_csv_row(processed_file_path):
         raise ValueError(f'Found NaNs in {processed_file_path}')
 
     return {
-        'res_plddt': res_plddt,
-        'aatypes_1': chain_feats['aatype'],
-        'rotmats_1': rotmats_1,
-        'trans_1': trans_1,
-        'res_mask': res_mask,
-        'chain_idx': new_chain_idx,
-        'res_idx': new_res_idx,
+        'res_plddt': res_plddt[:256],
+        'aatypes_1': chain_feats['aatype'][:256],
+        'rotmats_1': rotmats_1[:256],
+        'trans_1': trans_1[:256],
+        'res_mask': res_mask[:256],
+        'chain_idx': new_chain_idx[:256],
+        'res_idx': new_res_idx[:256],
     }
 
 
@@ -229,8 +229,8 @@ class BaseDataset(Dataset):
                 assert processed_row['aatypes_1'].shape == best_aatype.shape
                 processed_row['aatypes_1'] = best_aatype
         aatypes_1 = du.to_numpy(processed_row['aatypes_1'])
-        if len(set(aatypes_1)) == 1:
-            raise ValueError(f'Example {path} has only one amino acid.')
+        # if len(set(aatypes_1)) == 1:
+        #     raise ValueError(f'Example {path} has only one amino acid.')
         if use_cache:
             self._cache[path] = processed_row
         return processed_row

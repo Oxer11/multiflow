@@ -108,7 +108,7 @@ class FlowModel(nn.Module):
         node_embed = init_node_embed * node_mask[..., None]
         edge_embed = init_edge_embed * edge_mask[..., None]
         feats = {}
-        feats[0] = (node_embed * node_mask[..., None]).sum(dim=1) / (node_mask.sum(dim=1) + 1e-10).detach().cpu()
+        feats[0] = ((node_embed * node_mask[..., None]).sum(dim=1) / (node_mask[..., None].sum(dim=1) + 1e-10)).detach().cpu()
         for b in range(self._ipa_conf.num_blocks):
             ipa_embed = self.trunk[f'ipa_{b}'](
                 node_embed,
@@ -130,7 +130,7 @@ class FlowModel(nn.Module):
                 edge_embed = self.trunk[f'edge_transition_{b}'](
                     node_embed, edge_embed)
                 edge_embed *= edge_mask[..., None]
-            feats[b+1] =(node_embed * node_mask[..., None]).sum(dim=1) / (node_mask.sum(dim=1) + 1e-10).detach().cpu()
+            feats[b+1] = ((node_embed * node_mask[..., None]).sum(dim=1) / (node_mask[..., None].sum(dim=1, keepdim=True) + 1e-10)).detach().cpu()
 
         curr_rigids = self.rigids_nm_to_ang(curr_rigids)
         pred_trans = curr_rigids.get_trans()
